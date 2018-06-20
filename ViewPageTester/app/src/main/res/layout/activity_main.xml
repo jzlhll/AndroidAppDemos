@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/firstBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="btn"
+        android:onClick="onClickMy"
+        android:textSize="25dp"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/secondBtn"
+        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="btn2"
+        android:onClick="onClickMy"
+        android:textSize="25dp"
+        android:visibility="visible" />
+
+    <allan.com.viewpagetester.ScrollableViewPage
+        android:layout_below="@+id/firstBtn"
+        android:id="@+id/myviewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

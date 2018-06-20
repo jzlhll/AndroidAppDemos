@@ -2,9 +2,15 @@ package allan.com.allancontentprovider.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import allan.com.allancontentprovider.MyLog;
@@ -17,10 +23,10 @@ public class MyDbHelper extends SQLiteOpenHelper {
     private static final String CARD_TAB_CREATE_V1 = "create table "
             + Constant.TABLE_NOTIFY
             + " (_id integer primary key autoincrement," // _id
-            + "name text not null default name," // 名字
+            + "name text not null default 'UNKWN'," // 名字
             + "modify_time INTEGER not null default 0," // 时间
-            + "otherinfos text" // 其他信息
-            + "isRead BOOLEAN default 0," // 是否已读
+            + "otherinfos text," // 其他信息
+            + "isRead BOOLEAN default 0" // 是否已读
             + ");";
 
     private SQLiteDatabase db;
@@ -28,7 +34,6 @@ public class MyDbHelper extends SQLiteOpenHelper {
     private Context context;
     // 数据库版本号
     private int versionCode = 1;
-
 
     public MyDbHelper(Context context, String dbName, int DBVERSION, int oldVersion) {
         super(context, dbName, null, DBVERSION);
@@ -83,6 +88,12 @@ public class MyDbHelper extends SQLiteOpenHelper {
         context.deleteDatabase(DATABASE_NAME);
     }
 
+    public Cursor queryAll(String tableName) {
+        getDb();
+        String sql = "select" + " * " + " from " + tableName;
+        return db.rawQuery(sql, null);
+    }
+
     public int updateARowAsIsRead(int _id, boolean isRead, String tableName) {
         if (_id < 0)
             return -1;
@@ -91,7 +102,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
         values.put("isRead", isRead);
         // 此ID为该卡组的数据库_id
         return db.update(tableName, values, "_id=?",
-                new String[] { "" + _id });
+                new String[]{"" + _id});
     }
 
     /**
@@ -106,8 +117,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *
-     * @param list 插入的条目
+     * @param list      插入的条目
      * @param tableName 表名
      * @return 剩余多少没有插入
      */
@@ -115,7 +125,7 @@ public class MyDbHelper extends SQLiteOpenHelper {
         if (list == null || list.size() == 0) return 0;
         getDb();
         int ret = list.size();
-        for (ContentValues cv: list) {
+        for (ContentValues cv : list) {
             if (db.insert(tableName, null, cv) != -1) {
                 ret--;
             }
@@ -156,6 +166,41 @@ public class MyDbHelper extends SQLiteOpenHelper {
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
+        }
+    }
+
+    public static void exportDBtoSd(Context con, String dbName) {
+        String oldPath = con.getDatabasePath(dbName)
+                .getAbsolutePath();
+        File dir = new File(Environment.getExternalStorageDirectory()
+                + File.separator + "dbDir");
+        if (!dir.isDirectory())
+            dir.mkdir();
+        String newPath = Environment.getExternalStorageDirectory()
+                + File.separator + "dbDir" + File.separator
+                + dbName;
+        copyFile(oldPath, newPath);
+    }
+
+    private static void copyFile(String oldPath, String newPath) {
+        try {
+            int byteread = 0;
+            File oldfile = new File(oldPath);
+            File newfile = new File(newPath);
+            if (!newfile.exists()) {
+                newfile.createNewFile();
+            }
+            if (oldfile.exists()) { // 文件存在时
+                InputStream inStream = new FileInputStream(oldPath); // 读入原文件
+                FileOutputStream fs = new FileOutputStream(newPath);
+                byte[] buffer = new byte[1444];
+                while ((byteread = inStream.read(buffer)) != -1) {
+                    fs.write(buffer, 0, byteread);
+                }
+                inStream.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

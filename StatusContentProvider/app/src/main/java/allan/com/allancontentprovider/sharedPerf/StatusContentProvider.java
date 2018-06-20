@@ -13,7 +13,7 @@ import allan.com.allancontentprovider.MyLog;
 public class StatusContentProvider extends ContentProvider {
     private static final String TAG = "StatusProvider";
 
-    IDataModel mDataModel = null;
+    SharedPrefModel mDataModel = null;
 
     public StatusContentProvider() {
     }
@@ -28,7 +28,7 @@ public class StatusContentProvider extends ContentProvider {
     @Nullable
     @Override
     public final String getType(@NonNull Uri uri) {
-        switch (Constant.MATCHERS.match(uri)) {
+        switch (Constant.parseUriToMatchType(uri)) {
             case Constant.TYPE_ID_STATUS: {
                 return Constant.MIME_DIR_PREFIX + Constant.STATUS;
             }
@@ -90,7 +90,6 @@ public class StatusContentProvider extends ContentProvider {
             throw new UnsupportedOperationException("selection selectionArgs should be null");
         }
 
-        Uri parsedUri = Constant.parseUriToMyUri(uri);
         int rowId = Constant.parseUriToId(uri);
         int affectCount = 0;
         switch (rowId) {
@@ -104,7 +103,7 @@ public class StatusContentProvider extends ContentProvider {
                 affectCount = mDataModel.delete(rowId);
                 break;
         }
-        getContext().getContentResolver().notifyChange(parsedUri, null);
+        getContext().getContentResolver().notifyChange(uri, null);
         return affectCount;
     }
 
@@ -112,7 +111,6 @@ public class StatusContentProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         //只允许一条一条更新
         checkPermission(false);
-        Uri parsedUri = Constant.parseUriToMyUri(uri);
         int rowId = Constant.parseUriToId(uri);
         switch (rowId) {
             case -2:
@@ -125,8 +123,8 @@ public class StatusContentProvider extends ContentProvider {
         }
 
         int affectCount = mDataModel.update(values);
-        MyLog.d("update...... " + parsedUri);
-        getContext().getContentResolver().notifyChange(parsedUri, null);
+        MyLog.d("update...... " + uri);
+        getContext().getContentResolver().notifyChange(uri, null);
         return affectCount;
     }
 

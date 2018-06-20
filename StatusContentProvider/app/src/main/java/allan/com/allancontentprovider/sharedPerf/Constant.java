@@ -18,7 +18,7 @@ public class Constant {
     public static final String CONTENT_URI_STRING = "content://" + AUTHORITY + "/" + STATUS;
     public static final Uri CONTENT_URI = Uri.parse(CONTENT_URI_STRING);
 
-    public static final UriMatcher MATCHERS = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final UriMatcher MATCHERS = new UriMatcher(UriMatcher.NO_MATCH);
 
     public static final int TYPE_ID_STATUS = 1;
     public static final int TYPE_ID_STATUS_ITEM = 2;
@@ -45,22 +45,7 @@ public class Constant {
         return -2;
     }
 
-    /**
-     * return：<p>
-     * null表示匹配错误<p>
-     * -1表示匹配上了**全部**<p>
-     * >= 0 返回的是解析出来的代码行
-     */
-    public static Uri parseUriToMyUri(Uri uri) {
-        switch (MATCHERS.match(uri)) {
-            case TYPE_ID_STATUS:
-                return Uri.parse(CONTENT_URI_STRING);
-            case TYPE_ID_STATUS_ITEM: {
-                int id = (int) ContentUris.parseId(uri);
-                return Uri.parse(CONTENT_URI_STRING + "/" + id);
-            }
-            default:
-                return null;
-        }
+    public static int parseUriToMatchType(Uri uri) {
+        return MATCHERS.match(uri);
     }
 }
