@@ -7,20 +7,17 @@ import android.database.AbstractCursor;
 import android.database.Cursor;
 
 import allan.com.allancontentprovider.MyLog;
-import allan.com.allancontentprovider.model.Constant;
-import allan.com.allancontentprovider.model.IDataModel;
 
 /**
  * 使用sharedPreference作为介质存储数据
  */
-public class SharedPrefModel implements IDataModel {
+public class SharedPrefModel {
     private static final int THIS_VERSION = 3;
     private static final boolean NO_SUPPORT_DELETE_INSERT = true;
 
     private Context mCon;
     private SharedPreferences mSp;
 
-    @Override
     public void init(Context context) {
         mCon = context;
         mSp = mCon.getSharedPreferences("content_provider_db", Context.MODE_PRIVATE);
@@ -40,7 +37,6 @@ public class SharedPrefModel implements IDataModel {
     public SharedPrefModel() {
     }
 
-    @Override
     public Cursor query(final int rowId, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         //TODO 暂时不支持其他过滤的东西
         MyLog.d("query rowId " + rowId + " " + mSp.getString(Constant.KEY_NAME_TOKEN, null));
@@ -157,13 +153,11 @@ public class SharedPrefModel implements IDataModel {
         return count;
     }
 
-    @Override
     public int insert(ContentValues values) {
         if (NO_SUPPORT_DELETE_INSERT) return 0; //不支持此事
         return insertReal(values);
     }
 
-    @Override
     public int delete(int rowId) {
         if (NO_SUPPORT_DELETE_INSERT) return 0; //不支持此事
         switch (rowId) {
@@ -178,18 +172,15 @@ public class SharedPrefModel implements IDataModel {
         return 1;
     }
 
-    @Override
     public int deleteAll() {
         if (NO_SUPPORT_DELETE_INSERT) return 0; //不支持此事
         mSp.edit().clear().apply();
         return 0;
     }
 
-    @Override
     public int update(ContentValues values) {
         return insertReal(values);
     }
-
 
     // TODO 不断追加的地方
     private void updateSomething(boolean exist) {

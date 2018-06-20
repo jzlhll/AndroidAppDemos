@@ -1,4 +1,4 @@
-package allan.com.allancontentprovider.model;
+package allan.com.allancontentprovider.sharedPerf;
 
 import android.content.ContentUris;
 import android.content.UriMatcher;

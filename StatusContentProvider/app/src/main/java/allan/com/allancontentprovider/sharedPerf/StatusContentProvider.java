@@ -8,8 +8,6 @@ import android.os.Binder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import allan.com.allancontentprovider.model.IDataModel;
-import allan.com.allancontentprovider.model.Constant;
 import allan.com.allancontentprovider.MyLog;
 
 public class StatusContentProvider extends ContentProvider {
